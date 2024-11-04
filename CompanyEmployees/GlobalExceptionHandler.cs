@@ -1,6 +1,7 @@
 using System.Net;
 using Contracts;
 using Entities.ErrorModel;
+using Entities.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace CompanyEmployees;
@@ -15,7 +16,6 @@ public class GlobalExceptionHandler : IExceptionHandler
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
         // Setting up the response
-        httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         httpContext.Response.ContentType = "application/json";
 
         // Contains the error
@@ -23,6 +23,12 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         if (contextFeature is not null)
         {
+            httpContext.Response.StatusCode = contextFeature.Error switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound, // Querying against what Exception
+                _ => StatusCodes.Status500InternalServerError
+            };
+            
             // Log the contained error
             _logger.LogError($"Something went wrong: {contextFeature.Error}");
                     
@@ -30,7 +36,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             await httpContext.Response.WriteAsync(new ErrorDetails
             {
                 StatusCode = httpContext.Response.StatusCode,
-                Message = "Internal Server Error"
+                Message = contextFeature.Error.Message // Using our Exception Entity Message
             }.ToString());
         }
         
