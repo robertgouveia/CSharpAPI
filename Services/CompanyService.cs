@@ -34,4 +34,13 @@ internal sealed class CompanyService : ICompanyService
         return companiesDto;
         // We do not need a try catch block due to the exception handler picking up the error
     }
+
+    public CompanyDto GetCompany(Guid companyId, bool trackChanges)
+    {
+        var company = _repository.Company.GetCompany(companyId, trackChanges);
+        // Check company is null
+
+        var companyDto = _mapper.Map<CompanyDto>(company);
+        return companyDto;
+    }
 }

@@ -4,13 +4,13 @@ using Service.Contracts;
 namespace CompanyEmployees.Presentation.Controllers;
 
 [ApiController]
-[Route("api/companies")] // More specific
-public class CompaniesController : ControllerBase
+[Route("api/companies")] // Plural
+public class CompanyController : ControllerBase
 {
     private readonly IServiceManager _service;
 
     // We need access to the services
-    public CompaniesController(IServiceManager service) => _service = service;
+    public CompanyController(IServiceManager service) => _service = service;
 
     [HttpGet]
     public IActionResult GetCompanies()
@@ -23,5 +23,12 @@ public class CompaniesController : ControllerBase
         // Auto JSON response
         return Ok(companies);
         // No need for try catch due to exception handler picking up any errors
+    }
+
+    [HttpGet("{id:guid}")]
+    public IActionResult GetCompany(Guid id)
+    {
+        var company = _service.CompanyService.GetCompany(id, false);
+        return Ok(company);
     }
 }

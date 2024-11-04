@@ -11,4 +11,7 @@ public class CompanyRepository : RepositoryBase<Company>, ICompanyRepository
     // Since we inherit FindAll we can call it
     public IEnumerable<Company> GetAllCompanies(bool trackChanges) =>
         FindAll(trackChanges).OrderBy(c => c.Name).ToList();
+
+    public Company GetCompany(Guid companyId, bool trackChanges) =>
+        FindByCondition(c => c.Id == companyId, trackChanges).SingleOrDefault();
 }
