@@ -1,3 +1,4 @@
+using AutoMapper;
 using Contracts;
 using Service.Contracts;
 
@@ -10,10 +11,10 @@ public class ServiceManager : IServiceManager
     private readonly Lazy<IEmployeeService> _employeeService;
     private readonly Lazy<ICompanyService> _companyService;
 
-    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager loggerManager)
+    public ServiceManager(IRepositoryManager repositoryManager, ILoggerManager loggerManager, IMapper mapper)
     {
-        _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, loggerManager));
-        _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, loggerManager));
+        _employeeService = new Lazy<IEmployeeService>(() => new EmployeeService(repositoryManager, loggerManager, mapper));
+        _companyService = new Lazy<ICompanyService>(() => new CompanyService(repositoryManager, loggerManager, mapper));
     }
 
     // The services are set to the lazy loaded value
