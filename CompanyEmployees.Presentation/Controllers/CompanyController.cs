@@ -40,7 +40,7 @@ public class CompanyController : ControllerBase
         
         var companyInstance = _service.CompanyService.Create(company);
         
-        // Action to retrieve resource along with the ID and the resource itself
+        // Adds a location header with the action and params
         return CreatedAtRoute("CompanyById", new { id = companyInstance.Id }, companyInstance);
     }
 }
