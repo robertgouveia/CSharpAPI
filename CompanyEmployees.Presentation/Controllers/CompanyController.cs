@@ -58,4 +58,11 @@ public class CompanyController : ControllerBase
         var created = _service.CompanyService.CreateCompanies(companies);
         return CreatedAtRoute("CompanyCollection", new { ids = created.companyIds }, created.companyDtos);
     }
+
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteCompany(Guid id)
+    {
+        _service.CompanyService.DeleteCompany(id, false);
+        return NoContent();
+    }
 }
