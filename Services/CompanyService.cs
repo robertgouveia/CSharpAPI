@@ -93,4 +93,13 @@ internal sealed class CompanyService : ICompanyService
         _repository.Company.DeleteCompany(company);
         _repository.Save();
     }
+
+    public void UpdateCompany(Guid companyId, CompanyForUpdateDto company, bool trackChanges)
+    {
+        var companyInstance = _repository.Company.GetCompany(companyId, trackChanges);
+        if (companyInstance is null) throw new CompanyNotFoundException(companyId);
+
+        _mapper.Map(company, companyInstance);
+        _repository.Save();
+    }
 }

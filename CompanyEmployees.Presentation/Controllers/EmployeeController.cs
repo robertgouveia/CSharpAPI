@@ -41,4 +41,13 @@ public class EmployeeController : ControllerBase
         _service.EmployeeService.DeleteEmployee(companyId, id, false);
         return NoContent();
     }
+
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateEmployee(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
+    {
+        if (employee is null) return BadRequest("Body is not present");
+        
+        _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
+        return NoContent();
+    }
 }
