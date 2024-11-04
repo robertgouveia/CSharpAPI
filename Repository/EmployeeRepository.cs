@@ -10,4 +10,7 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
 
     public IEnumerable<Employee> GetEmployees(Guid companyId, bool trackChanges) =>
         FindByCondition(e => e.Company!.Id == companyId, trackChanges).OrderBy(e => e.Name).ToList();
+
+    public Employee GetEmployee(Guid companyId, Guid employeeId, bool trackChanges) =>
+        FindByCondition(e => e.Company!.Id == companyId && e.Id == employeeId, trackChanges).FirstOrDefault()!;
 }
