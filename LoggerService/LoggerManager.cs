@@ -1,3 +1,4 @@
+using Contracts;
 using Microsoft.Extensions.Logging;
 using NLog;
 using ILogger = NLog.ILogger;
