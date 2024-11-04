@@ -36,6 +36,17 @@ internal sealed class CompanyService : ICompanyService
         // We do not need a try catch block due to the exception handler picking up the error
     }
 
+    public IEnumerable<CompanyDto> GetCompanies(IEnumerable<Guid> companyIds, bool trackChanges)
+    {
+        if (companyIds is null) throw new IdParamsBadRequestException();
+
+        var companies = _repository.Company.GetCompanies(companyIds, trackChanges);
+        if (companyIds.Count() != companies.Count()) throw new CollectionByIdsBadRequestException();
+
+        var companyDtos = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+        return companyDtos;
+    }
+
     public CompanyDto GetCompany(Guid companyId, bool trackChanges)
     {
         var company = _repository.Company.GetCompany(companyId, trackChanges);
@@ -55,5 +66,22 @@ internal sealed class CompanyService : ICompanyService
 
         var companyDtoInstance = _mapper.Map<CompanyDto>(companyInstance);
         return companyDtoInstance;
+    }
+
+    public (IEnumerable<CompanyDto> companyDtos, string companyIds) CreateCompanies(IEnumerable<CompanyForCreationDto> companies)
+    {
+        if (companies is null || !companies.Any()) throw new CompanyCollectionBadRequestException();
+
+        var companyEntities = _mapper.Map<IEnumerable<Company>>(companies);
+        foreach (var company in companyEntities)
+        {
+            _repository.Company.CreateCompany(company);
+        }
+        _repository.Save();
+
+        var companyDtos = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+        var companyIds = string.Join(',', companyDtos.Select(c => c.Id));
+
+        return (companyDtos, companyIds);
     }
 }

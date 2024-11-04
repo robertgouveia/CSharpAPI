@@ -1,3 +1,4 @@
+using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -26,6 +27,13 @@ public class CompanyController : ControllerBase
         // No need for try catch due to exception handler picking up any errors
     }
 
+    [HttpGet("collection/{ids}", Name = "CompanyCollection")]
+    public IActionResult GetCompanies([ModelBinder(BinderType = typeof(ArrayModelBinder))]IEnumerable<Guid> ids)
+    {
+        var companies = _service.CompanyService.GetCompanies(ids, false);
+        return Ok(companies);
+    }
+
     [HttpGet("{id:guid}", Name = "CompanyById")] // Setting a name for the action
     public IActionResult GetCompany(Guid id)
     {
@@ -42,5 +50,12 @@ public class CompanyController : ControllerBase
         
         // Adds a location header with the action and params
         return CreatedAtRoute("CompanyById", new { id = companyInstance.Id }, companyInstance);
+    }
+
+    [HttpPost("collection")]
+    public IActionResult CreateCompanies([FromBody] IEnumerable<CompanyForCreationDto> companies)
+    {
+        var created = _service.CompanyService.CreateCompanies(companies);
+        return CreatedAtRoute("CompanyCollection", new { ids = created.companyIds }, created.companyDtos);
     }
 }

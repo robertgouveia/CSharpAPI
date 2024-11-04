@@ -1,6 +1,4 @@
 namespace Entities.Exceptions;
 
-public class EmployeeNotFoundException : NotFoundException
-{
-    public EmployeeNotFoundException(Guid employeeId) : base($"Employee with Id {employeeId} was not found in the specified company") { }
-}
+public class EmployeeNotFoundException(Guid employeeId)
+    : NotFoundException($"Employee with Id {employeeId} was not found in the specified company");
