@@ -1,3 +1,4 @@
+using CompanyEmployees.Formatters;
 using Contracts;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
@@ -41,4 +42,7 @@ public static class ServiceExtension
         {
             options.UseSqlServer(configuration.GetConnectionString("sqlConnection")); // no need for migrations
         });
+
+    public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder builder) =>
+        builder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter())); // Adds a new formatter
 }

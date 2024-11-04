@@ -18,8 +18,15 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program)); // allows for automapping
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>(); // Custom Global Error Handler
 
-builder.Services.AddControllers()
+builder.Services.AddControllers(config =>
+    {
+        config.RespectBrowserAcceptHeader = true; // Allow for Accept header
+        config.ReturnHttpNotAcceptable = true; // If unable to format response it will throw error (instead of JSON)
+    })
+    .AddXmlDataContractSerializerFormatters() // Allows for XML
+    .AddCustomCSVFormatter() // Custom CSV Formatter
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly); // Adding our external controllers
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
