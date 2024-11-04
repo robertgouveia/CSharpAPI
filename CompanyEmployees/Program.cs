@@ -3,7 +3,16 @@ using CompanyEmployees.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
 using NLog;
+
+// Creates a formatter for JSON Patch Requests
+NewtonsoftJsonPatchInputFormatter getJsonPatchInputFormatter() =>
+    new ServiceCollection().AddLogging().AddMvc().AddNewtonsoftJson()
+        .Services.BuildServiceProvider()
+        .GetRequiredService<IOptions<MvcOptions>>().Value.InputFormatters
+        .OfType<NewtonsoftJsonPatchInputFormatter>().First();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +38,7 @@ builder.Services.AddControllers(config =>
     {
         config.RespectBrowserAcceptHeader = true; // Allow for Accept header
         config.ReturnHttpNotAcceptable = true; // If unable to format response it will throw error (instead of JSON)
+        config.InputFormatters.Insert(0, getJsonPatchInputFormatter()); // Allows for a patch formatter
     })
     .AddXmlDataContractSerializerFormatters() // Allows for XML
     .AddCustomCSVFormatter() // Custom CSV Formatter

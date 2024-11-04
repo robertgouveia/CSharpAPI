@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
@@ -48,6 +50,22 @@ public class EmployeeController : ControllerBase
         if (employee is null) return BadRequest("Body is not present");
         
         _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}")]
+    public IActionResult PatchEmployee(Guid companyId, Guid id,
+        [FromBody] JsonPatchDocument<EmployeeForUpdateDto> employee)
+    {
+        if (employee is null) return BadRequest("Body is not present");
+
+        var updated = _service.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
+        
+        // Applies changes to a complete DTO
+        employee.ApplyTo(updated.employeeToPatch);
+        
+        // Merges the modified to the old
+        _service.EmployeeService.SaveChangesForPatch(updated.employeeToPatch, updated.employeeEntity);
         return NoContent();
     }
 }
