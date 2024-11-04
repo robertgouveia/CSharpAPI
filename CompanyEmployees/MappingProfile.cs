@@ -17,5 +17,7 @@ public class MappingProfile : Profile
             // You can specify options where it would not be a direct assignment
             options.MapFrom(x => string.Join(' ', x.Address, x.Country));
         });
+
+        CreateMap<Employee, EmployeeDto>();
     }
 }
