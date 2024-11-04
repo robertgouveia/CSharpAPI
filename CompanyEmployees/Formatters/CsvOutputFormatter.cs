@@ -16,6 +16,7 @@ public class CsvOutputFormatter : TextOutputFormatter
 
     protected override bool CanWriteType(Type? type)
     {
+        // If it is not a type of either Company Dto || IEnumerable Company Dto then it is not accepted
         if (!typeof(CompanyDto).IsAssignableFrom(type) && !typeof(IEnumerable<CompanyDto>).IsAssignableFrom(type)) return false;
         
         return base.CanWriteType(type);

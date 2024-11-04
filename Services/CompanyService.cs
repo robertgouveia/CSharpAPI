@@ -45,4 +45,15 @@ internal sealed class CompanyService : ICompanyService
         var companyDto = _mapper.Map<CompanyDto>(company);
         return companyDto;
     }
+
+    public CompanyDto Create(CompanyForCreationDto company)
+    {
+        var companyInstance = _mapper.Map<Company>(company);
+        
+        _repository.Company.CreateCompany(companyInstance);
+        _repository.Save(); // Repository Manager Save Method
+
+        var companyDtoInstance = _mapper.Map<CompanyDto>(companyInstance);
+        return companyDtoInstance;
+    }
 }
