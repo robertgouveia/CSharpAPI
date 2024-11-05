@@ -1,5 +1,6 @@
 using Contracts;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
@@ -9,14 +10,14 @@ public class CompanyRepository : RepositoryBase<Company>, ICompanyRepository
     public CompanyRepository(RepositoryContext repositoryContext) : base(repositoryContext) { }
 
     // Since we inherit FindAll we can call it
-    public IEnumerable<Company> GetAllCompanies(bool trackChanges) =>
-        FindAll(trackChanges).OrderBy(c => c.Name).ToList();
+    public async Task<IEnumerable<Company>> GetAllCompanies(bool trackChanges) =>
+        await FindAll(trackChanges).OrderBy(c => c.Name).ToListAsync();
 
-    public IEnumerable<Company> GetCompanies(IEnumerable<Guid> companyIds, bool trackChanges) =>
-        FindByCondition(c => companyIds.Contains(c.Id), trackChanges).ToList();
+    public async Task<IEnumerable<Company>> GetCompanies(IEnumerable<Guid> companyIds, bool trackChanges) =>
+        await FindByCondition(c => companyIds.Contains(c.Id), trackChanges).ToListAsync();
 
-    public Company GetCompany(Guid companyId, bool trackChanges) =>
-        FindByCondition(c => c.Id == companyId, trackChanges).OrderBy(c => c.Name).SingleOrDefault()!;
+    public async Task<Company> GetCompany(Guid companyId, bool trackChanges) =>
+        await FindByCondition(c => c.Id == companyId, trackChanges).OrderBy(c => c.Name).SingleOrDefaultAsync();
 
     public void CreateCompany(Company company) => Create(company);
 

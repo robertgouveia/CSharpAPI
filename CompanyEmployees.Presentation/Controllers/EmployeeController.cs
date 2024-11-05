@@ -15,55 +15,55 @@ public class EmployeeController : ControllerBase
     public EmployeeController(IServiceManager service) => _service = service;
 
     [HttpGet]
-    public IActionResult GetEmployees(Guid companyId)
+    public async Task<IActionResult> GetEmployees(Guid companyId)
     {
-        var employees = _service.EmployeeService.GetEmployees(companyId, false);
+        var employees = await _service.EmployeeService.GetEmployees(companyId, false);
         return Ok(employees);
     }
 
     [HttpGet("{id:guid}", Name = "EmployeeById")]
-    public IActionResult GetEmployee(Guid companyId, Guid id)
+    public async Task<IActionResult> GetEmployee(Guid companyId, Guid id)
     {
-        var employee = _service.EmployeeService.GetEmployee(companyId, id, false);
+        var employee = await _service.EmployeeService.GetEmployee(companyId, id, false);
         return Ok(employee);
     }
 
     [HttpPost]
-    public IActionResult CreateEmployee(Guid companyId, [FromBody] EmployeeForCreationDto employee)
+    public async Task<IActionResult> CreateEmployee(Guid companyId, [FromBody] EmployeeForCreationDto employee)
     {
         if (employee is null) return BadRequest("Body is not present");
 
         if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Checks for model validation
 
-        var employeeDto = _service.EmployeeService.CreateEmployee(companyId, employee, false);
+        var employeeDto = await _service.EmployeeService.CreateEmployee(companyId, employee, false);
         return CreatedAtRoute("EmployeeById", new { companyId, id = employeeDto.Id }, employeeDto);
     }
 
     [HttpDelete("{id:guid}")]
-    public IActionResult DeleteEmployee(Guid companyId, Guid id)
+    public async Task<IActionResult> DeleteEmployee(Guid companyId, Guid id)
     {
-        _service.EmployeeService.DeleteEmployee(companyId, id, false);
+        await _service.EmployeeService.DeleteEmployee(companyId, id, false);
         return NoContent();
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateEmployee(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
+    public async Task<IActionResult> UpdateEmployee(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
     {
         if (employee is null) return BadRequest("Body is not present");
 
         if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Check for validation
         
-        _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
+        await _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
         return NoContent();
     }
 
     [HttpPatch("{id:guid}")]
-    public IActionResult PatchEmployee(Guid companyId, Guid id,
+    public async Task<IActionResult> PatchEmployee(Guid companyId, Guid id,
         [FromBody] JsonPatchDocument<EmployeeForUpdateDto> employee)
     {
         if (employee is null) return BadRequest("Body is not present");
 
-        var updated = _service.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
+        var updated = await _service.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
         
         // Applies changes to a complete DTO
         employee.ApplyTo(updated.employeeToPatch, ModelState);
@@ -73,7 +73,7 @@ public class EmployeeController : ControllerBase
         if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
         
         // Merges the modified to the old
-        _service.EmployeeService.SaveChangesForPatch(updated.employeeToPatch, updated.employeeEntity);
+        await _service.EmployeeService.SaveChangesForPatch(updated.employeeToPatch, updated.employeeEntity);
         return NoContent();
     }
 }

@@ -5,5 +5,5 @@ public interface IRepositoryManager
 {
     ICompanyRepository Company { get; }
     IEmployeeRepository Employee { get; } // Reference to the tables
-    void Save(); // save implementation
+    Task Save(); // save implementation
 }

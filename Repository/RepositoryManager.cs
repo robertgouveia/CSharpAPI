@@ -23,5 +23,5 @@ public class RepositoryManager : IRepositoryManager
     public ICompanyRepository Company => _companyRepository.Value; // setting them as lazy
     public IEmployeeRepository Employee => _employeeRepository.Value;
 
-    public void Save() => _repositoryContext.SaveChanges(); // saving the DB
+    public async Task Save() => await _repositoryContext.SaveChangesAsync(); // saving the DB
 }
