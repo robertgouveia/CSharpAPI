@@ -13,7 +13,7 @@ public class EmployeeRepository : RepositoryBase<Employee>, IEmployeeRepository
     public async Task<PagedList<Employee>> GetEmployees(Guid companyId, EmployeeParameters employeeParameters,
         bool trackChanges)
     {
-        var employees = await FindByCondition(e => e.Company!.Id == companyId, trackChanges)
+        var employees = await FindByCondition(e => e.Company!.Id == companyId && e.Age >= employeeParameters.MinAge && e.Age <= employeeParameters.MaxAge, trackChanges)
             .OrderBy(e => e.Name)
             .Skip((employeeParameters.PageNumber - 1) * employeeParameters.PageSize)
             .Take(employeeParameters.PageSize)

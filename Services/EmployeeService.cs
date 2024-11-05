@@ -24,6 +24,8 @@ internal sealed class EmployeeService : IEmployeeService
 
     public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployees(Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
     {
+        if (!employeeParameters.ValidAgeRange) throw new MaxAgeRangeBadRequestException();
+        
         // Verification the company exists before fetching employees
         await CheckCompanyExists(companyId, trackChanges);
         
