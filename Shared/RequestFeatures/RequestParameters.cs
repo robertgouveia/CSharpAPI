@@ -13,4 +13,6 @@ public abstract class RequestParameters
         // If the set value is more than Max then set it to Max
         set => _pageSize = (value > MaxPageSize) ? MaxPageSize : value;
     }
+    
+    public string? OrderBy { get; set; }
 }
