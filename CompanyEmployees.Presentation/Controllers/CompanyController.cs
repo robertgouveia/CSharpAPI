@@ -45,6 +45,8 @@ public class CompanyController : ControllerBase
     public IActionResult CreateCompany([FromBody] CompanyForCreationDto? company) // FromBody JSON
     {
         if (company is null) return BadRequest("Body is not present");
+
+        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Checking for validation
         
         var companyInstance = _service.CompanyService.Create(company);
         
@@ -67,8 +69,12 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    public IActionResult UpdateCompany(Guid id, CompanyForUpdateDto company)
+    public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
     {
+        if (company is null) return BadRequest("Body is not present");
+
+        if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
+        
         _service.CompanyService.UpdateCompany(id, company, true);
         return NoContent();
     }

@@ -33,6 +33,8 @@ public class EmployeeController : ControllerBase
     {
         if (employee is null) return BadRequest("Body is not present");
 
+        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Checks for model validation
+
         var employeeDto = _service.EmployeeService.CreateEmployee(companyId, employee, false);
         return CreatedAtRoute("EmployeeById", new { companyId, id = employeeDto.Id }, employeeDto);
     }
@@ -48,6 +50,8 @@ public class EmployeeController : ControllerBase
     public IActionResult UpdateEmployee(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
     {
         if (employee is null) return BadRequest("Body is not present");
+
+        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Check for validation
         
         _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
         return NoContent();
@@ -62,7 +66,11 @@ public class EmployeeController : ControllerBase
         var updated = _service.EmployeeService.GetEmployeeForPatch(companyId, id, false, true);
         
         // Applies changes to a complete DTO
-        employee.ApplyTo(updated.employeeToPatch);
+        employee.ApplyTo(updated.employeeToPatch, ModelState);
+        // Adding the ModelState merges any unexpected values therefore breaking validation
+        
+        TryValidateModel(updated.employeeToPatch); // Validated the now patched employee
+        if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
         
         // Merges the modified to the old
         _service.EmployeeService.SaveChangesForPatch(updated.employeeToPatch, updated.employeeEntity);
