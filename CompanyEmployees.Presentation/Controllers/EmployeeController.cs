@@ -1,9 +1,10 @@
 using CompanyEmployees.Presentation.ActionFilters;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace CompanyEmployees.Presentation.Controllers;
 
@@ -16,10 +17,15 @@ public class EmployeeController : ControllerBase
     public EmployeeController(IServiceManager service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetEmployees(Guid companyId)
+    // From Query allows uri query collection
+    public async Task<IActionResult> GetEmployees(Guid companyId, [FromQuery] EmployeeParameters employeeParameters)
     {
-        var employees = await _service.EmployeeService.GetEmployees(companyId, false);
-        return Ok(employees);
+        var pagedResult = await _service.EmployeeService.GetEmployees(companyId, employeeParameters, false);
+        
+        // You can use the Text Json package for serializing objects
+        Response.Headers.Append("X-Pagination", System.Text.Json.JsonSerializer.Serialize(pagedResult.metaData));
+        
+        return Ok(pagedResult.employees);
     }
 
     [HttpGet("{id:guid}", Name = "EmployeeById")]

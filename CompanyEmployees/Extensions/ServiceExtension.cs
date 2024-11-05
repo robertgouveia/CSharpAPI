@@ -16,7 +16,8 @@ public static class ServiceExtension
         {
             builder.AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader(); // allowing all for CORS
+                .AllowAnyHeader() // allowing all for CORS
+                .WithExposedHeaders("X-Pagination"); // Allows for our pagination header
         });
     });
 
