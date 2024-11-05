@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
+using Services.DataShaping;
+using Shared.DataTransferObjects;
 
 // Creates a formatter for JSON Patch Requests
 NewtonsoftJsonPatchInputFormatter getJsonPatchInputFormatter() =>
@@ -29,6 +31,7 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program)); // allows for automapping
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>(); // Custom Global Error Handler
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 
 builder.Services.AddScoped<ValidationFilterAttribute>(); // Custom Action Filter
 
