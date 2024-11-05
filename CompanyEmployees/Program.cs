@@ -1,8 +1,10 @@
 using CompanyEmployees;
 using CompanyEmployees.Extensions;
+using CompanyEmployees.Presentation.ActionFilters;
 using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using NLog;
@@ -27,6 +29,8 @@ builder.Services.ConfigureServiceManager();
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program)); // allows for automapping
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>(); // Custom Global Error Handler
+
+builder.Services.AddScoped<ValidationFilterAttribute>(); // Custom Action Filter
 
 //Allow for custom error handling with controller
 builder.Services.Configure<ApiBehaviorOptions>(options =>

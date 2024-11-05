@@ -1,5 +1,7 @@
+using CompanyEmployees.Presentation.ActionFilters;
 using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Service.Contracts;
 using Shared.DataTransferObjects;
 
@@ -42,19 +44,16 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))] // Custom Action Filter
     public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto? company) // FromBody JSON
     {
-        if (company is null) return BadRequest("Body is not present");
-
-        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Checking for validation
-        
-        var companyInstance = await _service.CompanyService.Create(company);
-        
+        var companyInstance = await _service.CompanyService.Create(company!);
         // Adds a location header with the action and params
         return CreatedAtRoute("CompanyById", new { id = companyInstance.Id }, companyInstance);
     }
 
     [HttpPost("collection")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))] // Custom Action Filter
     public async Task<IActionResult> CreateCompanies([FromBody] IEnumerable<CompanyForCreationDto> companies)
     {
         var created = await _service.CompanyService.CreateCompanies(companies);
@@ -69,12 +68,9 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
     {
-        if (company is null) return BadRequest("Body is not present");
-
-        if (!ModelState.IsValid) return UnprocessableEntity(ModelState);
-        
         await _service.CompanyService.UpdateCompany(id, company, true);
         return NoContent();
     }

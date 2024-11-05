@@ -1,3 +1,4 @@
+using CompanyEmployees.Presentation.ActionFilters;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +30,9 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> CreateEmployee(Guid companyId, [FromBody] EmployeeForCreationDto employee)
     {
-        if (employee is null) return BadRequest("Body is not present");
-
-        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Checks for model validation
-
         var employeeDto = await _service.EmployeeService.CreateEmployee(companyId, employee, false);
         return CreatedAtRoute("EmployeeById", new { companyId, id = employeeDto.Id }, employeeDto);
     }
@@ -47,12 +45,9 @@ public class EmployeeController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [ServiceFilter(typeof(ValidationFilterAttribute))]
     public async Task<IActionResult> UpdateEmployee(Guid companyId, Guid id, [FromBody] EmployeeForUpdateDto employee)
     {
-        if (employee is null) return BadRequest("Body is not present");
-
-        if (!ModelState.IsValid) return UnprocessableEntity(ModelState); // Check for validation
-        
         await _service.EmployeeService.UpdateEmployee(companyId, id, employee, false, true);
         return NoContent();
     }
